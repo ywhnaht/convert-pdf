@@ -41,7 +41,7 @@
                                         <label for="fileInput" class="upload-btn">Chọn file</label>
                                         <input type="file" name="files" id="fileInput" accept="application/pdf,.pdf"
                                            multiple required hidden />
-                                        <p class="file-info">Tối đa 50MB • Chỉ file PDF</p>
+                                        <p class="file-info">Tối đa 10MB • Chỉ file PDF</p>
                                         <div id="filePreview" class="file-preview" style="display: none;">
                                             <div class="file-item">
                                                 <span class="file-icon">📄</span>

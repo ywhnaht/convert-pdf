@@ -712,7 +712,7 @@
                         const updatedAt = formatDate(file.updatedAt || null);
                         // const fileSize = file.wordCount ? (file.wordCount * 0.000001).toFixed(1) : '0.0';
                         const fileType = escapeHtml(file.type || 'other');
-                        const fileName = escapeHtml(file.originalFilename || 'Không có tên file');
+                        const fileName = escapeHtml(file.storedFilename || 'Không có tên file');
                         // console.log(file);
                         console.log(createdAt);
                         console.log(updatedAt);
