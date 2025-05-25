@@ -12,7 +12,14 @@ public class Files {
     private String status;        // pending, processing, done, error
     private Timestamp createdAt;
     private Timestamp updatedAt;
+      // URL cloud cho file input
+    public String getType() {
+        return type;
+    }
 
+    public void setType(String type) {
+        this.type = type;
+    }
     public Files() {}
 
     public Files(int userId, String originalFilename, String storedFilename, String type) {
@@ -26,7 +33,6 @@ public class Files {
     public int getId() {
         return id;
     }
-
     public void setId(int id) {
         this.id = id;
     }

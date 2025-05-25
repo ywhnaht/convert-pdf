@@ -10,8 +10,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
+import model.bean.User;
 import model.bo.FilesBO;
 import util.ConvertJob;
 import util.ConvertQueue;
@@ -56,7 +58,13 @@ public class UploadServlet extends HttpServlet {
             // Xóa file tạm
             tempFile.delete();
 
-            int userId = 1;
+            HttpSession session = request.getSession(false);
+            User user = (User) session.getAttribute("user");
+            if(user == null){
+                request.getRequestDispatcher("/views/login.jsp").forward(request, response);
+                return;
+            }
+            int userId = user.getId();
             fileId = filesBO.insertFile(userId, originalFilename, storedFilename, cloudUrl, "pdf");
 
             if (fileId > 0) {

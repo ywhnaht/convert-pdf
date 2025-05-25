@@ -12,9 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
-
-import model.bean.FileModel;
-import model.bean.UserModel;
+import model.bean.User;
+import model.bean.Files;
 import model.bo.HistoryFileBO;
 
 @WebServlet("/historyFile")
@@ -44,8 +43,12 @@ public class HistoryFileController extends HttpServlet {
             throws IOException {
         try {
             HttpSession session = request.getSession(false);
-            UserModel user = (UserModel) session.getAttribute("user");
-            List<FileModel> files = historyFileBO.getFiles(user == null ? 1 : user.getId());
+            User user = (User) session.getAttribute("user");
+            if(user == null){
+                request.getRequestDispatcher("/views/login.jsp").forward(request, response);
+                return;
+            }
+            List<Files> files = historyFileBO.getFiles(user.getId());
             // Apply filters if provided
             files = applyFilters(files, request);
             Gson gson = new Gson();
@@ -70,7 +73,7 @@ public class HistoryFileController extends HttpServlet {
     private void handlePageRequest(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         try {
-            request.getRequestDispatcher("historyFilePage.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/historyFilePage.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Có lỗi xảy ra khi tải trang");
@@ -81,7 +84,7 @@ public class HistoryFileController extends HttpServlet {
     /**
      * Apply filters to file list
      */
-    private List<FileModel> applyFilters(List<FileModel> files, HttpServletRequest request) {
+    private List<Files> applyFilters(List<Files> files, HttpServletRequest request) {
         String search = request.getParameter("search");
         String status = request.getParameter("status");
         String type = request.getParameter("type");
@@ -92,7 +95,7 @@ public class HistoryFileController extends HttpServlet {
             .filter(file -> {
                 // Filter by search term
                 if (search != null && !search.trim().isEmpty()) {
-                    if (!file.getOriginal_filename().toLowerCase().contains(search.toLowerCase())) {
+                    if (!file.getOriginalFilename().toLowerCase().contains(search.toLowerCase())) {
                         return false;
                     }
                 }
@@ -113,13 +116,13 @@ public class HistoryFileController extends HttpServlet {
                 
                 // Filter by date range
                 if (dateFrom != null && !dateFrom.trim().isEmpty()) {
-                    if (file.getCreated_at().before(java.sql.Date.valueOf(dateFrom))) {
+                    if (file.getCreatedAt().before(java.sql.Date.valueOf(dateFrom))) {
                         return false;
                     }
                 }
                 
                 if (dateTo != null && !dateTo.trim().isEmpty()) {
-                    if (file.getCreated_at().after(java.sql.Date.valueOf(dateTo))) {
+                    if (file.getCreatedAt().after(java.sql.Date.valueOf(dateTo))) {
                         return false;
                     }
                 }

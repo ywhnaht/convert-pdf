@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.bean.FileModel;
+import model.bean.Files;
 import util.DBConnection;
 
 public class HistoryFileDao {
@@ -15,15 +15,21 @@ public class HistoryFileDao {
         return DBConnection.getConnection();
     }
     
-    public List<FileModel> getFiles(int user_id) throws SQLException {
-        List<FileModel> files = new ArrayList<>();
+    public List<Files> getFiles(int user_id) throws SQLException {
+        List<Files> files = new ArrayList<>();
         String sql = "SELECT * FROM files WHERE user_id = ? ORDER BY created_at DESC";
         try (Connection conn = getConnection();
              PreparedStatement stmt =  conn.prepareStatement(sql)) {
             stmt.setInt(1, user_id);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    FileModel file = new FileModel(rs.getInt("id"), rs.getString("original_filename"), rs.getString("stored_filename"), rs.getString("status"), rs.getString("result_path"),  rs.getDate("created_at"), rs.getDate("updated_at"), rs.getInt("user_id"), rs.getString("type"), rs.getString("input_url"), rs.getString("output_url"));
+                    Files file = new Files(rs.getInt("id"), rs.getString("original_filename"), rs.getString("stored_filename"), rs.getString("type"));
+                    file.setInputUrl(rs.getString("input_url"));
+                    file.setOutputUrl(rs.getString("output_url"));
+                    file.setStatus(rs.getString("status"));
+                    file.setCreatedAt(rs.getTimestamp("created_at"));
+                    file.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    file.setUserId(rs.getInt("user_id"));
                     files.add(file);
                 }   
             }
