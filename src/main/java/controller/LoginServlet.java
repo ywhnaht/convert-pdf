@@ -37,7 +37,7 @@ import model.bo.UserBO;
 				if(user != null) {
 					session.setAttribute("loggedin", true);
 					session.setAttribute("user", user);
-					resp.sendRedirect(req.getContextPath() + "/views/upload.jsp");
+					resp.sendRedirect(req.getContextPath() + "/upload");
 				} else {
 					session.setAttribute("loggedin", false);
 					session.setAttribute("error-massage", "Tên đăng nhập hoặc mật khẩu không đúng");

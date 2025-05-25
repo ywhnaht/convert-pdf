@@ -32,7 +32,16 @@ public class UploadServlet extends HttpServlet {
         String message;
         FilesBO filesBO = new FilesBO();
         int fileId = -1;
-        
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");  
+
+        if (user == null) {
+            message = "Vui lòng đăng nhập để upload file";
+            request.setAttribute("message", message);
+            request.getRequestDispatcher("/views/Login.jsp").forward(request, response);
+            return;
+        }  
+
         try {
             Part filePart = request.getPart("file");
             if (filePart == null || filePart.getSize() == 0) {
@@ -57,13 +66,7 @@ public class UploadServlet extends HttpServlet {
             
             // Xóa file tạm
             tempFile.delete();
-
-            HttpSession session = request.getSession(false);
-            User user = (User) session.getAttribute("user");
-            if(user == null){
-                request.getRequestDispatcher("/views/login.jsp").forward(request, response);
-                return;
-            }
+           
             int userId = user.getId();
             fileId = filesBO.insertFile(userId, originalFilename, storedFilename, cloudUrl, "pdf");
 
