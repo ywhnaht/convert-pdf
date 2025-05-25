@@ -1,5 +1,6 @@
 package controller;
 import java.io.IOException;
+
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -8,7 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.bean.User;
-import model.bo.*;
+import model.bo.UserBO;
 
 	@WebServlet("/Login")
 	public class LoginServlet extends HttpServlet{
@@ -35,7 +36,7 @@ import model.bo.*;
 		    		if(user!= null) {
 		    			session.setAttribute("loggedin", true);
 		    			session.setAttribute("user", user);
-		    			destination = "/index.jsp";
+		    			destination = "/upload.jsp";
 		    			RequestDispatcher rd = getServletContext().getRequestDispatcher(destination);
 		    			rd.forward(req, resp);
 		    		}
