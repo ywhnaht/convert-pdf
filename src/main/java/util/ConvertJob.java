@@ -71,7 +71,7 @@ public class ConvertJob {
 
             // Tải PDF từ cloud về temp
             tempPdfFile = File.createTempFile("input_", ".pdf");
-            try (InputStream in = URL.of(URI.create(pdfCloudUrl), null).openStream()) {
+            try (InputStream in = new URL(pdfCloudUrl).openStream()) {
                 Files.copy(in, tempPdfFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
             }
 

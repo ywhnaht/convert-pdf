@@ -23,13 +23,13 @@ public class HistoryFileDao {
             stmt.setInt(1, user_id);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    Files file = new Files(rs.getInt("id"), rs.getString("original_filename"), rs.getString("stored_filename"), rs.getString("type"));
+                    Files file = new Files(rs.getInt("user_id"), rs.getString("original_filename"), rs.getString("stored_filename"), rs.getString("type"));
                     file.setInputUrl(rs.getString("input_url"));
                     file.setOutputUrl(rs.getString("output_url"));
                     file.setStatus(rs.getString("status"));
                     file.setCreatedAt(rs.getTimestamp("created_at"));
                     file.setUpdatedAt(rs.getTimestamp("updated_at"));
-                    file.setUserId(rs.getInt("user_id"));
+                    file.setId(rs.getInt("id"));
                     files.add(file);
                 }   
             }

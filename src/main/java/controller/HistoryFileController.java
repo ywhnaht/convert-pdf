@@ -77,7 +77,7 @@ public class HistoryFileController extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Có lỗi xảy ra khi tải trang");
-            request.getRequestDispatcher("error.jsp").forward(request, response);
+                request.getRequestDispatcher("error.jsp").forward(request, response);
         }
     }
     
