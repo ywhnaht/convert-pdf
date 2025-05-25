@@ -1,6 +1,5 @@
-// Global variables
-let statusCheckInterval;
-let currentFileId = null;
+let statusCheckIntervals = new Map(); 
+let currentFileIds = new Set();
 
 // DOM Elements
 const uploadForm = document.getElementById('uploadForm');
@@ -30,20 +29,26 @@ function initializeEventListeners() {
     uploadArea.addEventListener('dragleave', handleDragLeave);
     uploadArea.addEventListener('drop', handleDrop);
     
-    // Remove file
     document.getElementById('removeFile').addEventListener('click', removeSelectedFile);
     
     // Cleanup on page unload
     window.addEventListener('beforeunload', cleanup);
 }
 
-// Form submission handler
 function handleFormSubmit(e) {
-    const file = fileInput.files[0];
+    const files = fileInput.files;
     
-    if (!validateFile(file)) {
+    if (files.length === 0) {
         e.preventDefault();
+        showMessage('Vui lòng chọn ít nhất một file PDF để upload', 'error');
         return;
+    }
+    
+    for (let i = 0; i < files.length; i++) {
+        if (!validateFile(files[i])) {
+            e.preventDefault();
+            return;
+        }
     }
     
     showUploadLoading(true);
@@ -71,22 +76,38 @@ function validateFile(file) {
 
 // File selection handler
 function handleFileSelect(e) {
-    const file = e.target.files[0];
-    if (file) {
-        displayFilePreview(file);
+    const files = e.target.files;
+    if (files.length > 0) {
+        displayFilesPreview(files);
     }
 }
 
-// Display file preview
-function displayFilePreview(file) {
-    const fileName = document.getElementById('fileName');
-    const fileSize = document.getElementById('fileSize');
-    
-    fileName.textContent = file.name;
-    fileSize.textContent = formatFileSize(file.size);
-    
+function displayFilesPreview(files) {
     filePreview.style.display = 'block';
     uploadArea.style.padding = '20px';
+    
+    filePreview.innerHTML = '';
+    
+    Array.from(files).forEach((file, index) => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        fileItem.innerHTML = `
+            <span class="file-icon">📄</span>
+            <div class="file-details">
+                <span class="file-name">${file.name}</span>
+                <span class="file-size">${formatFileSize(file.size)}</span>
+            </div>
+            <button type="button" class="remove-file" data-index="${index}">×</button>
+        `;
+        filePreview.appendChild(fileItem);
+    });
+
+    document.querySelectorAll('.remove-file').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const index = parseInt(e.target.dataset.index);
+            removeFileByIndex(index);
+        });
+    });
 }
 
 // Remove selected file
@@ -94,6 +115,26 @@ function removeSelectedFile() {
     fileInput.value = '';
     filePreview.style.display = 'none';
     uploadArea.style.padding = '40px 20px';
+}
+
+function removeFileByIndex(index) {
+    const dt = new DataTransfer();
+    const files = fileInput.files;
+    
+    for (let i = 0; i < files.length; i++) {
+        if (i !== index) {
+            dt.items.add(files[i]);
+        }
+    }
+    
+    fileInput.files = dt.files;
+    
+    if (fileInput.files.length === 0) {
+        filePreview.style.display = 'none';
+        uploadArea.style.padding = '40px 20px';
+    } else {
+        displayFilesPreview(fileInput.files);
+    }
 }
 
 // Format file size
@@ -122,10 +163,13 @@ function handleDrop(e) {
     
     const files = e.dataTransfer.files;
     if (files.length > 0) {
-        const file = files[0];
-        if (validateFile(file)) {
-            fileInput.files = files;
-            displayFilePreview(file);
+        const validFiles = Array.from(files).filter(file => validateFile(file));
+        
+        if (validFiles.length > 0) {
+            const dt = new DataTransfer();
+            validFiles.forEach(file => dt.items.add(file));
+            fileInput.files = dt.files;
+            displayFilesPreview(fileInput.files);
         }
     }
 }
@@ -143,49 +187,64 @@ function showUploadLoading(show) {
     }
 }
 
-// Start status checking
 function startStatusChecking(fileId) {
-    currentFileId = fileId;
+    currentFileIds.add(fileId);
     statusContainer.style.display = 'block';
-    statusContent.innerHTML = createStatusHTML('pending', 'Đang chuẩn bị xử lý...', null, null);
     
-    // Clear existing interval
-    if (statusCheckInterval) {
-        clearInterval(statusCheckInterval);
+    let fileStatusDiv = document.getElementById(`status-${fileId}`);
+    if (!fileStatusDiv) {
+        fileStatusDiv = document.createElement('div');
+        fileStatusDiv.id = `status-${fileId}`;
+        fileStatusDiv.className = 'file-status';
+        statusContent.appendChild(fileStatusDiv);
     }
     
-    // Start checking status every 2 seconds
-    statusCheckInterval = setInterval(() => {
+    fileStatusDiv.innerHTML = createStatusHTML('pending', 'Đang chuẩn bị xử lý...', null, null);
+    
+    if (statusCheckIntervals.has(fileId)) {
+        clearInterval(statusCheckIntervals.get(fileId));
+    }
+    
+    const interval = setInterval(() => {
         checkFileStatus(fileId);
     }, 2000);
     
-    // Initial check
+    statusCheckIntervals.set(fileId, interval);
+    
     checkFileStatus(fileId);
 }
 
-// Check file status
 function checkFileStatus(fileId) {
     const contextPath = window.location.pathname.substring(0, window.location.pathname.indexOf('/', 1));
     
     fetch(`${contextPath}/status?fileId=${fileId}`)
         .then(response => response.json())
         .then(data => {
-            updateStatusDisplay(data);
+            updateStatusDisplay(fileId, data);
             
-            // Stop checking if done or error
             if (data.status === 'done' || data.status === 'error') {
-                clearInterval(statusCheckInterval);
-                showUploadLoading(false);
+                clearInterval(statusCheckIntervals.get(fileId));
+                statusCheckIntervals.delete(fileId);
+                currentFileIds.delete(fileId);
+                
+                if (currentFileIds.size === 0) {
+                    showUploadLoading(false);
+                }
             }
         })
         .catch(error => {
             console.error('Error checking status:', error);
-            statusContent.innerHTML = createStatusHTML('error', 'Lỗi khi kiểm tra trạng thái', null, null);
+            const fileStatusDiv = document.getElementById(`status-${fileId}`);
+            if (fileStatusDiv) {
+                fileStatusDiv.innerHTML = createStatusHTML('error', 'Lỗi khi kiểm tra trạng thái', null, null);
+            }
         });
 }
 
-// Update status display
-function updateStatusDisplay(data) {
+function updateStatusDisplay(fileId, data) {
+    const fileStatusDiv = document.getElementById(`status-${fileId}`);
+    if (!fileStatusDiv) return;
+    
     let message, progress;
     
     switch(data.status) {
@@ -210,7 +269,7 @@ function updateStatusDisplay(data) {
             progress = 0;
     }
     
-    statusContent.innerHTML = createStatusHTML(data.status, message, data.outputUrl, data.originalFilename);
+    fileStatusDiv.innerHTML = createStatusHTML(data.status, message, data.outputUrl, data.originalFilename);
 }
 
 // Create status HTML
@@ -286,9 +345,8 @@ function showMessage(text, type) {
     }, 5000);
 }
 
-// Cleanup function
 function cleanup() {
-    if (statusCheckInterval) {
-        clearInterval(statusCheckInterval);
-    }
+    statusCheckIntervals.forEach(interval => clearInterval(interval));
+    statusCheckIntervals.clear();
+    currentFileIds.clear();
 }

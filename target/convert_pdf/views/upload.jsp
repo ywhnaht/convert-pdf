@@ -1,4 +1,5 @@
 <%@ page import="model.bo.FilesBO, model.bean.Files" %>
+<%@ page import="java.util.List, java.util.ArrayList" %>
     <%@ page contentType="text/html;charset=UTF-8" language="java" %>
         <!DOCTYPE html>
         <html>
@@ -38,8 +39,8 @@
                                         <div class="upload-icon">📎</div>
                                         <p class="upload-text">Kéo thả file PDF vào đây hoặc</p>
                                         <label for="fileInput" class="upload-btn">Chọn file</label>
-                                        <input type="file" name="file" id="fileInput" accept="application/pdf,.pdf"
-                                            required hidden />
+                                        <input type="file" name="files" id="fileInput" accept="application/pdf,.pdf"
+                                           multiple required hidden />
                                         <p class="file-info">Tối đa 50MB • Chỉ file PDF</p>
                                         <div id="filePreview" class="file-preview" style="display: none;">
                                             <div class="file-item">
@@ -77,14 +78,18 @@
 
             <script src="<%= request.getContextPath() %>/assets/js/upload.js"></script>
 
-            <% Integer fileId=(Integer) request.getAttribute("fileId"); if (fileId !=null && fileId> 0) {
-                %>
+            <% 
+            List<Integer> fileIds = (List<Integer>) request.getAttribute("fileIds");
+            if (fileIds != null && !fileIds.isEmpty()) {
+            %>
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
-                        startStatusChecking(<%= fileId %>);
+                        <% for (Integer fileId : fileIds) { %>
+                            startStatusChecking(<%= fileId %>);
+                        <% } %>
                     });
                 </script>
-                <% } %>
+            <% } %>
         </body>
 
         </html>

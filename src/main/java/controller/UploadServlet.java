@@ -3,6 +3,10 @@ package controller;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -31,7 +35,7 @@ public class UploadServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String message;
         FilesBO filesBO = new FilesBO();
-        int fileId = -1;
+        List<Integer> fileIds = new ArrayList<>();
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");  
 
@@ -43,36 +47,48 @@ public class UploadServlet extends HttpServlet {
         }  
 
         try {
-            Part filePart = request.getPart("file");
-            if (filePart == null || filePart.getSize() == 0) {
+            // Lấy tất cả các file từ request
+            Collection<Part> fileParts = request.getParts().stream()
+                .filter(part -> "files".equals(part.getName()))
+                .collect(Collectors.toList());
+
+            if (fileParts.isEmpty()) {
                 throw new Exception("Vui lòng chọn file để upload");
             }
-            
-            String originalFilename = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-            if (!originalFilename.toLowerCase().endsWith(".pdf")) {
-                throw new Exception("Chỉ chấp nhận file PDF");
+
+            for (Part filePart : fileParts) {
+                if (filePart.getSize() == 0) continue;
+                
+                String originalFilename = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+                if (!originalFilename.toLowerCase().endsWith(".pdf")) {
+                    throw new Exception("Chỉ chấp nhận file PDF");
+                }
+                
+                String storedFilename = originalFilename;
+
+                // Tạo file tạm để upload lên cloud
+                String tempDir = System.getProperty("java.io.tmpdir");
+                File tempFile = new File(tempDir, storedFilename);
+                filePart.write(tempFile.getAbsolutePath());
+
+                // Upload lên cloud
+                CloudStorageService cloudService = CloudStorageService.getInstance();
+                String cloudUrl = cloudService.uploadFile(tempFile, "pdf-converter/input", storedFilename);
+                
+                // Xóa file tạm
+                tempFile.delete();
+               
+                int userId = user.getId();
+                int fileId = filesBO.insertFile(userId, originalFilename, storedFilename, cloudUrl, "docx");
+
+                if (fileId > 0) {
+                    fileIds.add(fileId);
+                    ConvertQueue.getInstance().addJob(new ConvertJob(fileId, cloudUrl, storedFilename));
+                }
             }
-            
-            String storedFilename = originalFilename;
 
-            // Tạo file tạm để upload lên cloud
-            String tempDir = System.getProperty("java.io.tmpdir");
-            File tempFile = new File(tempDir, storedFilename);
-            filePart.write(tempFile.getAbsolutePath());
-
-            // Upload lên cloud
-            CloudStorageService cloudService = CloudStorageService.getInstance();
-            String cloudUrl = cloudService.uploadFile(tempFile, "pdf-converter/input", storedFilename);
-            
-            // Xóa file tạm
-            tempFile.delete();
-           
-            int userId = user.getId();
-            fileId = filesBO.insertFile(userId, originalFilename, storedFilename, cloudUrl, "docx");
-
-            if (fileId > 0) {
-                ConvertQueue.getInstance().addJob(new ConvertJob(fileId, cloudUrl, storedFilename));
-                message = "Upload thành công! File đang được chuyển đổi. Vui lòng chờ...";
+            if (!fileIds.isEmpty()) {
+                message = "Upload thành công! " + fileIds.size() + " file đang được chuyển đổi. Vui lòng chờ...";
             } else {
                 message = "Upload thất bại. Vui lòng thử lại.";
             }
@@ -82,7 +98,7 @@ public class UploadServlet extends HttpServlet {
         }
         
         request.setAttribute("message", message);
-        request.setAttribute("fileId", fileId);
+        request.setAttribute("fileIds", fileIds);
         request.getRequestDispatcher("/views/upload.jsp").forward(request, response);
     }
 }

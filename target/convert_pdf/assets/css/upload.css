@@ -120,10 +120,11 @@ body.has-header {
     margin-top: 15px;
 }
 
-/* File Preview */
 .file-preview {
     margin-top: 20px;
     text-align: left;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .file-item {
@@ -133,6 +134,7 @@ body.has-header {
     border-radius: 8px;
     padding: 12px;
     gap: 12px;
+    margin-bottom: 8px;
 }
 
 .file-icon {
@@ -217,6 +219,18 @@ body.has-header {
     margin-top: 25px;
     padding-top: 25px;
     border-top: 1px solid rgba(189, 195, 199, 0.3);
+}
+
+.file-status {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.file-status:last-child {
+    margin-bottom: 0;
 }
 
 .status-container {
