@@ -47,14 +47,15 @@ public class FilesDAO {
         return false;
     }
     
-    public boolean updateFileStatusAndOutput(int fileId, String status, String outputUrl) {
-        String sql = "UPDATE files SET status = ?, output_url = ?, updated_at = NOW() WHERE id = ?";
+    public boolean updateFileStatusAndOutput(int fileId, String status, String outputUrl, String docxFilename) {
+        String sql = "UPDATE files SET status = ?, output_url = ?, stored_filename = ?, updated_at = NOW() WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setString(1, status);
             stmt.setString(2, outputUrl);
-            stmt.setInt(3, fileId);
+            stmt.setString(3, docxFilename);
+            stmt.setInt(4, fileId);
             return stmt.executeUpdate() > 0;
             
         } catch (SQLException e) {

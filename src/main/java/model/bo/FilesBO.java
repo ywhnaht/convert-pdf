@@ -22,8 +22,8 @@ public class FilesBO {
         filesDAO.updateFileStatus(file_id, status);
     }
 
-    public void updateFileStatusAndOutput(int file_id, String status, String result_path) {
-        filesDAO.updateFileStatusAndOutput(file_id, status, result_path);
+    public void updateFileStatusAndOutput(int file_id, String status, String result_path, String docx_filename) {
+        filesDAO.updateFileStatusAndOutput(file_id, status, result_path, docx_filename);
     }
     
 }

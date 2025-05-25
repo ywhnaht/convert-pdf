@@ -22,12 +22,13 @@ public class CloudStorageService {
     }
     
     @SuppressWarnings("unchecked")
-    public String uploadFile(File file, String folder) throws Exception {
+    public String uploadFile(File file, String folder, String filename) throws Exception {
         Map<String, Object> uploadResult = cloudinary.uploader().upload(file, 
             ObjectUtils.asMap(
                 "folder", folder,
                 "resource_type", "raw",
-                "type", "upload"
+                "type", "upload",
+                "public_id", filename
             )
         );
         String url = (String) uploadResult.get("secure_url");

@@ -17,6 +17,7 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 
+import model.bo.FilesBO;
 import model.dao.FilesDAO;
 
 public class ConvertJob {
@@ -62,12 +63,12 @@ public class ConvertJob {
     }
 
     public void process() {
-        FilesDAO filesDAO = new FilesDAO();
+        FilesBO filesBO = new FilesBO();
         File tempPdfFile = null;
         File tempDocxFile = null;
         
         try {
-            filesDAO.updateFileStatus(fileId, "processing");
+            filesBO.updateFileStatus(fileId, "processing");
 
             // Tải PDF từ cloud về temp
             tempPdfFile = File.createTempFile("input_", ".pdf");
@@ -116,13 +117,14 @@ public class ConvertJob {
 
             // Upload DOCX lên cloud
             CloudStorageService cloudService = CloudStorageService.getInstance();
-            String outputCloudUrl = cloudService.uploadFile(tempDocxFile, "pdf-converter/output");
+            String docxFilename = convertToDocxFilename(storedFilename);
+            String outputCloudUrl = cloudService.uploadFile(tempDocxFile, "pdf-converter/output/", docxFilename);
             
             // Cập nhật database với URL output
-            filesDAO.updateFileStatusAndOutput(fileId, "done", outputCloudUrl);
+            filesBO.updateFileStatusAndOutput(fileId, "done", outputCloudUrl, docxFilename);
 
         } catch (Exception e) {
-            filesDAO.updateFileStatus(fileId, "error");
+            filesBO.updateFileStatus(fileId, "error");
             e.printStackTrace();
         } finally {
             // Dọn dẹp file tạm
@@ -133,5 +135,12 @@ public class ConvertJob {
                 tempDocxFile.delete();
             }
         }
+    }
+
+    private String convertToDocxFilename(String originalFilename) {
+        if (originalFilename.toLowerCase().endsWith(".pdf")) {
+            return originalFilename.substring(0, originalFilename.length() - 4) + ".docx";
+        }
+        return originalFilename + ".docx";
     }
 }

@@ -53,7 +53,7 @@ public class UploadServlet extends HttpServlet {
                 throw new Exception("Chỉ chấp nhận file PDF");
             }
             
-            String storedFilename = System.currentTimeMillis() + "_" + originalFilename;
+            String storedFilename = originalFilename;
 
             // Tạo file tạm để upload lên cloud
             String tempDir = System.getProperty("java.io.tmpdir");
@@ -62,13 +62,13 @@ public class UploadServlet extends HttpServlet {
 
             // Upload lên cloud
             CloudStorageService cloudService = CloudStorageService.getInstance();
-            String cloudUrl = cloudService.uploadFile(tempFile, "pdf-converter/input");
+            String cloudUrl = cloudService.uploadFile(tempFile, "pdf-converter/input", storedFilename);
             
             // Xóa file tạm
             tempFile.delete();
            
             int userId = user.getId();
-            fileId = filesBO.insertFile(userId, originalFilename, storedFilename, cloudUrl, "pdf");
+            fileId = filesBO.insertFile(userId, originalFilename, storedFilename, cloudUrl, "docx");
 
             if (fileId > 0) {
                 ConvertQueue.getInstance().addJob(new ConvertJob(fileId, cloudUrl, storedFilename));
