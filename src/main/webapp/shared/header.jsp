@@ -1,7 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="model.User" %>
+<%@ page import="model.bean.User" %>
 <%
-    // Lấy username từ session hoặc request
     User currentUser = (User) session.getAttribute("user");
     if (currentUser == null) {
         response.sendRedirect("/Login");

@@ -2,11 +2,11 @@ package controller;
 
 import java.io.IOException;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import model.bean.User;
 import model.bo.UserBO;
 
@@ -14,10 +14,12 @@ import model.bo.UserBO;
 public class RegisterServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("Register.jsp").forward(req, resp);
+        req.getRequestDispatcher("views/Register.jsp").forward(req, resp);
     }
 
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
         resp.setCharacterEncoding("UTF-8");
@@ -25,9 +27,10 @@ public class RegisterServlet extends HttpServlet {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
         String confirmPassword = req.getParameter("confirmPassword");
+        
         String validationError = validateInput(username, password, confirmPassword);
         if (validationError != null) {
-            forwardWithError(req, resp, "Register.jsp", validationError);
+            forwardWithError(req, resp, "/views/Register.jsp", validationError);
             return;
         }
 
@@ -35,7 +38,7 @@ public class RegisterServlet extends HttpServlet {
         
         try {
             if (userBO.isUsernameExists(username)) {
-                forwardWithError(req, resp, "Register.jsp", "Tên đăng nhập đã tồn tại!");
+                forwardWithError(req, resp, "/views/Register.jsp", "Tên đăng nhập đã tồn tại!");
                 return;
             }
             
@@ -45,16 +48,16 @@ public class RegisterServlet extends HttpServlet {
             boolean success = userBO.createUser(newUser);
             
             if (success) {
-                forwardWithSuccess(req, resp, "Login.jsp", "Đăng ký thành công! Vui lòng đăng nhập.");
+                // Sử dụng sendRedirect thay vì forward khi đăng ký thành công
+                resp.sendRedirect(req.getContextPath() + "/views/Login.jsp");
             } else {
-                forwardWithError(req, resp, "Register.jsp", "Có lỗi xảy ra khi đăng ký. Vui lòng thử lại!");
+                forwardWithError(req, resp, "/views/Register.jsp", "Có lỗi xảy ra khi đăng ký. Vui lòng thử lại!");
             }
             
         } catch (Exception e) {
             System.err.println("Registration error: " + e.getMessage());
             e.printStackTrace();
-            
-            forwardWithError(req, resp, "Register.jsp", "Lỗi hệ thống. Vui lòng thử lại sau!");
+            forwardWithError(req, resp, "/views/Register.jsp", "Lỗi hệ thống. Vui lòng thử lại sau!");
         }
     }
     
@@ -83,13 +86,13 @@ public class RegisterServlet extends HttpServlet {
     }
     
     private void forwardWithError(HttpServletRequest req, HttpServletResponse resp, 
-                                 String page, String errorMessage) throws ServletException, IOException {
+                             String page, String errorMessage) throws ServletException, IOException {
         req.setAttribute("error", errorMessage);
         req.getRequestDispatcher(page).forward(req, resp);
     }
-    
+
     private void forwardWithSuccess(HttpServletRequest req, HttpServletResponse resp, 
-                                   String page, String successMessage) throws ServletException, IOException {
+                                String page, String successMessage) throws ServletException, IOException {
         req.setAttribute("success", successMessage);
         req.getRequestDispatcher(page).forward(req, resp);
     }

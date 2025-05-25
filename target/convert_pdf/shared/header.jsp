@@ -1,13 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="model.bean.User" %>
 <%
-    // Lấy username từ session hoặc request
-    String username = (String) session.getAttribute("username");
-    if (username == null) {
-        username = (String) request.getAttribute("username");
+    User currentUser = (User) session.getAttribute("user");
+    if (currentUser == null) {
+        response.sendRedirect("/Login");
     }
-    if (username == null) {
-        username = "User";
-    }
+
+    String username = currentUser.getUsername();
 %>
 
 <header class="app-header">
@@ -48,17 +47,17 @@
                         Lịch sử file
                     </a>
                     
-                    <a href="<%= request.getContextPath() %>/views/profile.jsp" class="dropdown-item">
+                    <!-- <a href="<%= request.getContextPath() %>/views/profile.jsp" class="dropdown-item">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                             <circle cx="12" cy="7" r="4"/>
                         </svg>
                         Thông tin cá nhân
-                    </a>
+                    </a> -->
                     
                     <div class="dropdown-divider"></div>
                     
-                    <a href="<%= request.getContextPath() %>/logout" class="dropdown-item logout-item">
+                    <a href="<%= request.getContextPath() %>/LogoutServlet" class="dropdown-item logout-item">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                             <polyline points="16,17 21,12 16,7"/>

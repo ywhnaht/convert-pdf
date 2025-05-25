@@ -19,7 +19,7 @@
     </servlet>
     
     <welcome-file-list>
-        <welcome-file>views/upload.jsp</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
     
     <!-- Error pages -->

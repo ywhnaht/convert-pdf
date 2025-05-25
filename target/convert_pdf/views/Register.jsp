@@ -176,7 +176,7 @@
             }
         %>
 
-        <form action="Register" method="post" onsubmit="return validateForm()">
+        <form action="${pageContext.request.contextPath}/Register" method="post" id="registerForm">
             <div class="form-group">
                 <label for="username">Tên đăng nhập</label>
                 <div class="input-wrapper">
@@ -206,34 +206,40 @@
         </form>
         
         <div class="login-link">
-            <p>Đã có tài khoản? <a href="Login.jsp">Đăng nhập</a></p>
+            <p>Đã có tài khoản? <a href="${pageContext.request.contextPath}/views/Login.jsp">Đăng nhập</a></p>
         </div>
     </div>
 
     <script>
-        function validateForm() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('registerForm');
             
-            if (username.length < 8) {
-                alert('Tên đăng nhập phải có ít nhất 8 ký tự!');
-                return false;
-            }
-            
-            
-            if (password.length < 8) {
-                alert('Mật khẩu phải có ít nhất 9 ký tự!');
-                return false;
-            }
-            
-            if (password !== confirmPassword) {
-                alert('Mật khẩu xác nhận không khớp!');
-                return false;
-            }
-            
-            return true;
-        }
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); 
+                
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                if (username.trim().length < 8) {
+                    alert('Tên đăng nhập phải có ít nhất 8 ký tự!');
+                    return;
+                }
+                
+                if (password.length < 8) {
+                    alert('Mật khẩu phải có ít nhất 8 ký tự!');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    alert('Mật khẩu xác nhận không khớp!');
+                    return;
+                }
+                
+                console.log('Form validation passed, submitting...');
+                this.submit();
+            });
+        });
     </script>
 </body>
 </html>

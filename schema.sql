@@ -39,8 +39,8 @@ INSERT INTO users (username, password_hash) VALUES
 ('bob',   '$2a$10$1234567890abcdefghijklm');
 
 INSERT INTO files (user_id, original_filename, stored_filename, status, type, input_url, output_url, created_at, updated_at) VALUES
-(1, 'sample1.pdf', '20240601_1_sample1.pdf', 'done', 'pdf', 'https://example.com/sample1.pdf', 'https://example.com/sample1.docx', NOW(), NOW()),
-(2, 'report.pdf', '20240601_2_report.pdf', 'pending', 'pdf', 'https://example.com/report.pdf', NULL, NOW(), NULL);
+(1, 'Đề AI - 02.pdf', '1748158555643_Đề AI - 02.pdf', 'done', 'pdf', 'https://res.cloudinary.com/deayvqofe/raw/upload/v1748158658/pdf-converter/input/bbr6xkgdj5eg0knye3xw.pdf', 'https://res.cloudinary.com/deayvqofe/raw/upload/v1748158669/pdf-converter/output/tuq6rwizm68kgshpemv9.docx', NOW(), NOW()),
+(2, 'Đề AI - 01.pdf', '1748158555643_Đề AI - 01.pdf', 'error', 'pdf', 'https://res.cloudinary.com/deayvqofe/raw/upload/v1748158658/pdf-converter/input/bbr6xkgdj5eg0knye3xw.pdf', NULL, NOW(), NULL);
 
 INSERT INTO logs (user_id, action, file_id) VALUES
 (1, 'upload', 1),

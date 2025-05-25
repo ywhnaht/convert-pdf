@@ -1,3 +1,4 @@
+controller\LoginServlet.class
 model\bean\User.class
 model\bean\Files.class
 model\bo\FilesBO.class
@@ -7,9 +8,11 @@ util\DBConnection.class
 model\dao\FilesDAO.class
 util\ConvertJob.class
 util\ConvertQueue.class
-controller\CheckLoginServlet.class
 model\dao\UserDAO.class
 controller\StatusServlet$StatusResponse.class
+controller\LogoutServlet.class
 model\bo\UserBO.class
+util\hashPassword.class
+controller\RegisterServlet.class
 controller\DownloadServlet.class
 controller\UploadServlet.class
