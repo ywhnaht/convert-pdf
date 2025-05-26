@@ -13,27 +13,23 @@
         </head>
 
         <body class="has-header">
-            <!-- Include Header -->
             <jsp:include page="../shared/header.jsp" />
 
             <div class="background">
                 <div class="upload-container">
                     <div class="upload-card">
-                        <!-- Header -->
                         <div class="header">
                             <div class="icon">📄</div>
                             <h2>PDF TO WORD</h2>
                             <p>Chuyển đổi file PDF sang Word dễ dàng</p>
                         </div>
 
-                        <!-- Success Message -->
                         <% String message=(String) request.getAttribute("message"); if (message !=null) { %>
                             <div class="message success" id="uploadMessage">
                                 <%= message %>
                             </div>
                             <% } %>
 
-                                <!-- Upload Form -->
                                 <form action="upload" method="post" enctype="multipart/form-data" id="uploadForm">
                                     <div class="upload-area" id="uploadArea">
                                         <div class="upload-icon">📎</div>
@@ -60,20 +56,13 @@
                                     </button>
                                 </form>
 
-                                <!-- Status Container -->
                                 <div id="statusContainer" class="status-section" style="display: none;">
                                     <div id="statusContent"></div>
                                 </div>
-
-                                <!-- Footer -->
-                                <!-- <div class="footer">
-                    <a href="history.jsp" class="footer-link">📋 Lịch sử file</a>
-                </div> -->
                     </div>
                 </div>
             </div>
 
-            <!-- Include Footer -->
             <jsp:include page="../shared/footer.jsp" />
 
             <script src="<%= request.getContextPath() %>/assets/js/upload.js"></script>

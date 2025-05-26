@@ -24,7 +24,7 @@ import util.ConvertQueue;
 import util.CloudStorageService;
 
 @WebServlet("/upload")
-@MultipartConfig(maxFileSize = 50 * 1024 * 1024) // 50MB max
+@MultipartConfig(maxFileSize = 50 * 1024 * 1024) 
 public class UploadServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -35,10 +35,7 @@ public class HistoryFileController extends HttpServlet {
             handlePageRequest(request, response);
         }
     }
-    
-    /**
-     * Xử lý request AJAX trả về JSON data
-     */
+   
     private void handleAjaxRequest(HttpServletRequest request, HttpServletResponse response) 
             throws IOException {
         try {
@@ -67,9 +64,6 @@ public class HistoryFileController extends HttpServlet {
         }
     }
     
-    /**
-     * Xử lý request hiển thị JSP page
-     */
     private void handlePageRequest(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         try {
@@ -81,9 +75,6 @@ public class HistoryFileController extends HttpServlet {
         }
     }
     
-    /**
-     * Apply filters to file list
-     */
     private List<Files> applyFilters(List<Files> files, HttpServletRequest request) {
         String search = request.getParameter("search");
         String status = request.getParameter("status");

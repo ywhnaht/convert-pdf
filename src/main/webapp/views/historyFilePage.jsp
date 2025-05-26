@@ -363,7 +363,6 @@
                 border: 1px solid #f5b7b1;
             }
 
-            /* Responsive styles */
             @media (max-width: 768px) {
                 body {
                     padding: 10px;
@@ -446,7 +445,6 @@
                 }
             }
 
-            /* Scrollbar styling */
             ::-webkit-scrollbar {
                 width: 8px;
             }
@@ -476,12 +474,9 @@
             </div>
 
             <div class="main-content">
-                <!-- Thống kê -->
                 <div class="stats-grid" id="statsContainer">
-                    <!-- Nội dung sẽ được cập nhật bằng JavaScript -->
                 </div>
 
-                <!-- Bộ lọc -->
                 <form id="filterForm">
                     <div class="filters">
                         <div class="filter-group">
@@ -529,18 +524,14 @@
                     </div>
                 </form>
 
-                <!-- Thông báo lỗi -->
                 <div id="errorContainer" class="error-message" style="display: none;"></div>
 
-                <!-- Loading indicator -->
                 <div id="loadingIndicator" class="loading-indicator">
                     <div class="loading-spinner"></div>
                     <p>Đang tải dữ liệu...</p>
                 </div>
 
-                <!-- Danh sách file -->
                 <div class="file-list" id="fileListContainer">
-                    <!-- Nội dung sẽ được cập nhật bằng JavaScript -->
                 </div>
             </div>
         </div>
