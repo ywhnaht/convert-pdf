@@ -7,12 +7,12 @@ public class Files {
     private String originalFilename;
     private String storedFilename;
     private String type;
-    private String inputUrl;      // URL cloud cho file input
-    private String outputUrl;     // URL cloud cho file output
-    private String status;        // pending, processing, done, error
+    private String inputUrl;     
+    private String outputUrl;    
+    private String status;        
     private Timestamp createdAt;
     private Timestamp updatedAt;
-      // URL cloud cho file input
+    
     public String getType() {
         return type;
     }

@@ -79,7 +79,7 @@
             </header>
 
             <script>
-                // Toggle user menu dropdown
+                
                 document.addEventListener('DOMContentLoaded', function () {
                     const menuToggle = document.getElementById('userMenuToggle');
                     const dropdown = document.getElementById('userDropdown');
@@ -90,12 +90,10 @@
                             dropdown.classList.toggle('show');
                         });
 
-                        // Close dropdown when clicking outside
                         document.addEventListener('click', function () {
                             dropdown.classList.remove('show');
                         });
 
-                        // Prevent dropdown from closing when clicking inside
                         dropdown.addEventListener('click', function (e) {
                             e.stopPropagation();
                         });

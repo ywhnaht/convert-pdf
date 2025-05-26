@@ -37,7 +37,6 @@ public class StatusServlet extends HttpServlet {
                 return;
             }
             
-            // Tạo response JSON
             StatusResponse statusResponse = new StatusResponse();
             statusResponse.status = file.getStatus();
             statusResponse.originalFilename = file.getOriginalFilename();

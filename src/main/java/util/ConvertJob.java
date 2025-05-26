@@ -34,26 +34,25 @@ public class ConvertJob {
     private List<String> extractStructuredText(PDDocument document) throws Exception {
         PDFTextStripper stripper = new PDFTextStripper();
         String text = stripper.getText(document);
-        
-        // Phân tích và cấu trúc lại text
+ 
         List<String> structuredParagraphs = new ArrayList<>();
         String[] rawParagraphs = text.split("\\n\\s*\\n");
         
         for (String paragraph : rawParagraphs) {
             paragraph = paragraph.trim();
             if (!paragraph.isEmpty()) {
-                // Xử lý các trường hợp đặc biệt
+               
                 if (paragraph.matches("^[A-Z][^.!?]*[.!?]$")) {
-                    // Đoạn văn bản thông thường
+                   
                     structuredParagraphs.add(paragraph);
                 } else if (paragraph.matches("^[0-9]+\\..*")) {
-                    // Danh sách đánh số
+                   
                     structuredParagraphs.add(paragraph);
                 } else if (paragraph.matches("^[•\\-\\*].*")) {
-                    // Danh sách bullet points
+                  
                     structuredParagraphs.add(paragraph);
                 } else {
-                    // Các trường hợp khác, giữ nguyên
+                   
                     structuredParagraphs.add(paragraph);
                 }
             }
@@ -70,38 +69,37 @@ public class ConvertJob {
         try {
             filesBO.updateFileStatus(fileId, "processing");
 
-            // Tải PDF từ cloud về temp
             tempPdfFile = File.createTempFile("input_", ".pdf");
             try (InputStream in = new URL(pdfCloudUrl).openStream()) {
                 Files.copy(in, tempPdfFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
             }
 
-            // Đọc và xử lý PDF
+            
             PDDocument document = PDDocument.load(tempPdfFile);
             List<String> structuredParagraphs = extractStructuredText(document);
             document.close();
 
-            // Tạo file DOCX với định dạng phù hợp
+     
             tempDocxFile = File.createTempFile("output_", ".docx");
             XWPFDocument docx = new XWPFDocument();
             
             for (String paragraph : structuredParagraphs) {
                 XWPFParagraph para = docx.createParagraph();
                 
-                // Xác định định dạng đoạn văn
+             
                 if (paragraph.matches("^[0-9]+\\..*")) {
-                    // Đoạn văn đánh số
+                  
                     para.setNumID(BigInteger.valueOf(1));
                     para.setAlignment(ParagraphAlignment.LEFT);
                 } else if (paragraph.matches("^[•\\-\\*].*")) {
-                    // Đoạn văn bullet point
+              
                     para.setNumID(BigInteger.valueOf(2));
                     para.setAlignment(ParagraphAlignment.LEFT);
                 } else if (paragraph.matches("^[A-Z][^.!?]*[.!?]$")) {
-                    // Đoạn văn thông thường
+               
                     para.setAlignment(ParagraphAlignment.CENTER);
                 } else {
-                    // Các trường hợp khác
+             
                     para.setAlignment(ParagraphAlignment.LEFT);
                 }
                 
@@ -109,25 +107,25 @@ public class ConvertJob {
                 run.setText(paragraph);
             }
             
-            // Lưu file DOCX
+
             try (FileOutputStream out = new FileOutputStream(tempDocxFile)) {
                 docx.write(out);
             }
             docx.close();
 
-            // Upload DOCX lên cloud
+
             CloudStorageService cloudService = CloudStorageService.getInstance();
             String docxFilename = convertToDocxFilename(storedFilename);
             String outputCloudUrl = cloudService.uploadFile(tempDocxFile, "pdf-converter/output/", docxFilename);
             
-            // Cập nhật database với URL output
+         
             filesBO.updateFileStatusAndOutput(fileId, "done", outputCloudUrl, docxFilename);
 
         } catch (Exception e) {
             filesBO.updateFileStatus(fileId, "error");
             e.printStackTrace();
         } finally {
-            // Dọn dẹp file tạm
+         
             if (tempPdfFile != null && tempPdfFile.exists()) {
                 tempPdfFile.delete();
             }

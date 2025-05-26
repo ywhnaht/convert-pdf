@@ -547,7 +547,7 @@
         <jsp:include page="../shared/footer.jsp" />
 
         <script>
-            // Hàm mã hóa HTML để tránh XSS
+
             function escapeHtml(unsafe) {
                 if (unsafe == null || unsafe === undefined) return '';
                 return String(unsafe)
@@ -557,7 +557,6 @@
                     .replace(/'/g, "&#039;");
             }
 
-            // Hàm định dạng ngày
             function formatDate(dateString) {
                 if (!dateString) return 'N/A';
                 try {
@@ -573,12 +572,10 @@
                 }
             }
 
-            // Hàm hiển thị loading
             function showLoading(show) {
                 document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
             }
 
-            // Hàm hiển thị lỗi
             function showError(message) {
                 const errorContainer = document.getElementById('errorContainer');
                 if (message) {
@@ -589,7 +586,6 @@
                 }
             }
 
-            // Hàm tải dữ liệu từ server
             async function loadData() {
                 showLoading(true);
                 showError(null);
@@ -630,13 +626,11 @@
                 }
             }
 
-            // Hàm cập nhật giao diện
             function updateUI(files) {
                 updateStatistics(files);
                 updateFileList(files);
             }
 
-            // Hàm cập nhật thống kê
             function updateStatistics(files) {
                 if (!files || !Array.isArray(files)) {
                     document.getElementById('statsContainer').innerHTML = `
@@ -676,7 +670,6 @@
                 `;
             }
 
-            // Hàm cập nhật danh sách file
             function updateFileList(files) {
                 const fileListContainer = document.getElementById('fileListContainer');
                 if (!fileListContainer) {
@@ -702,18 +695,12 @@
                 let fileListHTML = '';
                 files.forEach(file => {
                     try {
-                        // Kiểm tra file và file.id có hợp lệ
-                        // if (!file || !file.id) {
-                        //     console.warn('Invalid file data, skipping:', file);
-                        //     return;
-                        // }
+
 
                         const createdAt = formatDate(file.createdAt);
                         const updatedAt = formatDate(file.updatedAt || null);
-                        // const fileSize = file.wordCount ? (file.wordCount * 0.000001).toFixed(1) : '0.0';
                         const fileType = escapeHtml(file.type || 'other');
                         const fileName = escapeHtml(file.storedFilename || 'Không có tên file');
-                        // console.log(file);
                         console.log(createdAt);
                         console.log(updatedAt);
                         console.log(fileType);
@@ -741,7 +728,6 @@
                                 statusClass = 'pending';
                         }
 
-                        // Kiểm tra file.id trước khi tạo nút tải về
                         const safeFileId = escapeHtml(String(file.id));
                         const downloadButton = file.status === 'done' && safeFileId
                             ? `<button class="btn btn-small btn-download" onclick="downloadFile('${safeFileId}')">⬇️ Tải
@@ -786,7 +772,6 @@
                 fileListContainer.innerHTML = fileListHTML;
             }
 
-            // Hàm tải file về
             async function downloadFile(fileId) {
                 if (!fileId) {
                     showError('ID file không hợp lệ');
@@ -811,7 +796,6 @@
                 }
             }
 
-            // Hàm xóa file
             async function deleteFile(fileId) {
                 if (!fileId) {
                     showError('ID file không hợp lệ');
@@ -838,7 +822,6 @@
                 }
             }
 
-            // Debounce function
             function debounce(func, wait) {
                 let timeout;
                 return function () {
@@ -848,7 +831,6 @@
                 };
             }
 
-            // Sự kiện khi trang được tải
             document.addEventListener('DOMContentLoaded', function () {
                 loadData();
                 document.getElementById('refreshBtn').addEventListener('click', loadData);
@@ -860,7 +842,6 @@
                 document.getElementById('dateToFilter').addEventListener('change', loadData);
             });
 
-            // Smooth scrolling
             document.documentElement.style.scrollBehavior = 'smooth';
         </script>
     </body>

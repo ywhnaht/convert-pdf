@@ -26,11 +26,11 @@ public class HistoryFileController extends HttpServlet {
         
         String action = request.getParameter("action");
         
-        // Nếu request từ AJAX (yêu cầu JSON data)
+        
         if ("data".equals(action)) {
             handleAjaxRequest(request, response);
         } 
-        // Nếu request thông thường (hiển thị JSP page)
+
         else {
             handlePageRequest(request, response);
         }
@@ -49,7 +49,7 @@ public class HistoryFileController extends HttpServlet {
                 return;
             }
             List<Files> files = historyFileBO.getFiles(user.getId());
-            // Apply filters if provided
+      
             files = applyFilters(files, request);
             Gson gson = new Gson();
             String jsonData = gson.toJson(files);
@@ -93,28 +93,28 @@ public class HistoryFileController extends HttpServlet {
         
         return files.stream()
             .filter(file -> {
-                // Filter by search term
+               
                 if (search != null && !search.trim().isEmpty()) {
                     if (!file.getOriginalFilename().toLowerCase().contains(search.toLowerCase())) {
                         return false;
                     }
                 }
                 
-                // Filter by status
+
                 if (status != null && !status.trim().isEmpty()) {
                     if (!status.equals(file.getStatus())) {
                         return false;
                     }
                 }
                 
-                // Filter by type
+               
                 if (type != null && !type.trim().isEmpty()) {
                     if (!type.equals(file.getType())) {
                         return false;
                     }
                 }
                 
-                // Filter by date range
+        
                 if (dateFrom != null && !dateFrom.trim().isEmpty()) {
                     if (file.getCreatedAt().before(java.sql.Date.valueOf(dateFrom))) {
                         return false;

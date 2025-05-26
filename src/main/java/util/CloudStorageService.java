@@ -39,7 +39,7 @@ public class CloudStorageService {
     public String getDownloadUrl(String publicId) {
         return cloudinary.url()
             .resourceType("raw")
-            .type("upload") // Đảm bảo là upload, không phải private
+            .type("upload") 
             .secure(true)
             .generate(publicId);
     }

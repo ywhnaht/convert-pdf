@@ -1,7 +1,7 @@
 let statusCheckIntervals = new Map(); 
 let currentFileIds = new Set();
 
-// DOM Elements
+
 const uploadForm = document.getElementById('uploadForm');
 const fileInput = document.getElementById('fileInput');
 const uploadArea = document.getElementById('uploadArea');
@@ -12,26 +12,23 @@ const uploadSpinner = document.getElementById('uploadSpinner');
 const statusContainer = document.getElementById('statusContainer');
 const statusContent = document.getElementById('statusContent');
 
-// Initialize when DOM is loaded
+
 document.addEventListener('DOMContentLoaded', function() {
     initializeEventListeners();
 });
 
 function initializeEventListeners() {
-    // Form submission
+
     uploadForm.addEventListener('submit', handleFormSubmit);
     
-    // File input change
     fileInput.addEventListener('change', handleFileSelect);
     
-    // Drag and drop
     uploadArea.addEventListener('dragover', handleDragOver);
     uploadArea.addEventListener('dragleave', handleDragLeave);
     uploadArea.addEventListener('drop', handleDrop);
     
     document.getElementById('removeFile').addEventListener('click', removeSelectedFile);
     
-    // Cleanup on page unload
     window.addEventListener('beforeunload', cleanup);
 }
 
@@ -54,7 +51,6 @@ function handleFormSubmit(e) {
     showUploadLoading(true);
 }
 
-// File validation
 function validateFile(file) {
     if (!file) {
         showMessage('Vui lòng chọn file PDF để upload', 'error');
@@ -74,7 +70,7 @@ function validateFile(file) {
     return true;
 }
 
-// File selection handler
+
 function handleFileSelect(e) {
     const files = e.target.files;
     if (files.length > 0) {
@@ -110,7 +106,7 @@ function displayFilesPreview(files) {
     });
 }
 
-// Remove selected file
+
 function removeSelectedFile() {
     fileInput.value = '';
     filePreview.style.display = 'none';
@@ -137,7 +133,7 @@ function removeFileByIndex(index) {
     }
 }
 
-// Format file size
+
 function formatFileSize(bytes) {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -146,7 +142,7 @@ function formatFileSize(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-// Drag and drop handlers
+
 function handleDragOver(e) {
     e.preventDefault();
     uploadArea.classList.add('dragover');
@@ -174,7 +170,7 @@ function handleDrop(e) {
     }
 }
 
-// Show upload loading state
+
 function showUploadLoading(show) {
     if (show) {
         submitBtn.disabled = true;
@@ -272,7 +268,7 @@ function updateStatusDisplay(fileId, data) {
     fileStatusDiv.innerHTML = createStatusHTML(data.status, message, data.outputUrl, data.originalFilename);
 }
 
-// Create status HTML
+
 function createStatusHTML(status, message, outputUrl, originalFilename) {
     let progressWidth = 0;
     switch(status) {
@@ -322,22 +318,18 @@ function createStatusHTML(status, message, outputUrl, originalFilename) {
     return html;
 }
 
-// Show message
+
 function showMessage(text, type) {
-    // Remove existing messages
     const existingMessages = document.querySelectorAll('.message');
     existingMessages.forEach(msg => msg.remove());
     
-    // Create new message
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}`;
     messageDiv.textContent = text;
     
-    // Insert after header
     const header = document.querySelector('.header');
     header.insertAdjacentElement('afterend', messageDiv);
     
-    // Auto remove after 5 seconds
     setTimeout(() => {
         if (messageDiv.parentNode) {
             messageDiv.remove();

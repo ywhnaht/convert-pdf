@@ -47,7 +47,7 @@ public class UploadServlet extends HttpServlet {
         }  
 
         try {
-            // Lấy tất cả các file từ request
+
             Collection<Part> fileParts = request.getParts().stream()
                 .filter(part -> "files".equals(part.getName()))
                 .collect(Collectors.toList());
@@ -66,16 +66,15 @@ public class UploadServlet extends HttpServlet {
                 
                 String storedFilename = originalFilename;
 
-                // Tạo file tạm để upload lên cloud
+              
                 String tempDir = System.getProperty("java.io.tmpdir");
                 File tempFile = new File(tempDir, storedFilename);
                 filePart.write(tempFile.getAbsolutePath());
 
-                // Upload lên cloud
                 CloudStorageService cloudService = CloudStorageService.getInstance();
                 String cloudUrl = cloudService.uploadFile(tempFile, "pdf-converter/input", storedFilename);
                 
-                // Xóa file tạm
+           
                 tempFile.delete();
                
                 int userId = user.getId();

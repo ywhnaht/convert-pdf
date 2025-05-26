@@ -48,7 +48,7 @@ public class RegisterServlet extends HttpServlet {
             boolean success = userBO.createUser(newUser);
             
             if (success) {
-                // Sử dụng sendRedirect thay vì forward khi đăng ký thành công
+            
                 resp.sendRedirect(req.getContextPath() + "/views/Login.jsp");
             } else {
                 forwardWithError(req, resp, "/views/Register.jsp", "Có lỗi xảy ra khi đăng ký. Vui lòng thử lại!");

@@ -24,7 +24,7 @@ public class DownloadFileController extends HttpServlet {
             String jsonData = gson.toJson(file_url);
             System.out.println(jsonData);
             response.setContentType("application/json");
-            // response.setCharacterEncoding("UTF-8");
+          
             response.getWriter().write(jsonData);
         } catch (SQLException e) {
             e.printStackTrace();
